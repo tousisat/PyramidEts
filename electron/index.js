@@ -1,9 +1,8 @@
 const electron = require("electron");
 const MainWindow = require("./app/MainWindow");
 const SerialPort = require("./app/SerialPort");
-const { ipcMain } = electron;
 
-const { app } = electron;
+const { app, ipcMain } = electron;
 
 let mainWindow;
 
