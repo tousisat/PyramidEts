@@ -1,0 +1,11 @@
+.TabConfig {
+  .tabs:not(:last-child) {
+    margin-bottom: 0;
+  }
+  .TabContainer {
+    width: 100%;
+    height: 25rem;
+    background-color: #fff;
+    border: 1px solid #dbdbdb;
+  }
+}
