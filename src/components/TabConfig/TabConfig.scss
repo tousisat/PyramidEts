@@ -7,5 +7,24 @@
     height: 25rem;
     background-color: #fff;
     border: 1px solid #dbdbdb;
+    padding: 0.5rem;
+
+    .TabContainer-textarea {
+      height: 22rem;
+      resize: none;
+    }
+    .TabButtons {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.3rem;
+    }
+  }
+  .TabButtons {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 1rem;
+    button {
+      margin-left: 0.5rem;
+    }
   }
 }
