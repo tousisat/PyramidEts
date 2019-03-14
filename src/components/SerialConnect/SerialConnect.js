@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Button, Dropdown } from "react-bulma-components";
 import "./SerialConnect.scss";
+import { BUTTONS_UNIQUE_CLASS } from "../../utils/constant";
 
 const SerialConnect = props => {
   const isPorts = props.ports && props.ports.length > 0;
@@ -24,8 +25,21 @@ const SerialConnect = props => {
       >
         {items}
       </Dropdown>
-      <Button disabled={!isPorts} onClick={() => props.onConnect(selection)}>
+      <Button
+        className={"Connect-Button " + BUTTONS_UNIQUE_CLASS.CONNECT}
+        disabled={!isPorts}
+        onClick={() => props.onConnect(selection)}
+      >
         Connect
+      </Button>
+      <Button
+        onClick={props.onDisableServos}
+        color={"warning"}
+        className={
+          "is-outlined Disable-Button " + BUTTONS_UNIQUE_CLASS.DISABLE_SERVOS
+        }
+      >
+        Disable servos
       </Button>
     </div>
   );

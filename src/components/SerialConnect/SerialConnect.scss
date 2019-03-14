@@ -7,4 +7,18 @@
       justify-content: space-between;
     }
   }
+
+  .Connect-Button {
+    margin-right: 0.5rem;
+  }
+
+  .Disable-Button {
+    &:active,
+    &:hover,
+    &:focus {
+      background-color: transparent !important;
+      box-shadow: none !important;
+      color: #ffdd57 !important;
+    }
+  }
 }

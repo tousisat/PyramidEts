@@ -17,14 +17,9 @@
       display: flex;
       justify-content: flex-end;
       margin-top: 0.3rem;
-    }
-  }
-  .TabButtons {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 1rem;
-    button {
-      margin-left: 0.5rem;
+      button {
+        margin-left: 0.3rem;
+      }
     }
   }
 }
