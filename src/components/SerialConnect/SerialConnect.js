@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Dropdown } from "react-bulma-components";
 import "./SerialConnect.scss";
 import { BUTTONS_UNIQUE_CLASS } from "../../utils/constant";
 
 const SerialConnect = props => {
   const isPorts = props.ports && props.ports.length > 0;
-  const [selection, setSelection] = useState(isPorts ? props.ports[0] : null);
+  const [selection, setSelection] = useState(null);
+
+  //watch for props change
+  useEffect(() => {
+    setSelection(isPorts ? props.ports[0] : null);
+  }, [props.ports]);
 
   const items = isPorts
     ? props.ports.map((portName, index) => (
@@ -30,7 +35,7 @@ const SerialConnect = props => {
         disabled={!isPorts}
         onClick={() => props.onConnect(selection)}
       >
-        Connect
+        {!props.isConnected ? "Connect" : "Disconnect"}
       </Button>
       <Button
         onClick={props.onDisableServos}

@@ -4,8 +4,9 @@ const { BrowserWindow } = electron;
 class MainWindow extends BrowserWindow {
   constructor(url) {
     super({
-      height: 600,
+      height: 650,
       width: 1200,
+      resizable: false,
       webPreferences: { backgroundThrottling: false }
     });
 

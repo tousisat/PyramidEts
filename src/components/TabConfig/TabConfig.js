@@ -18,6 +18,7 @@ const TabConfig = props => {
     if (selected === undefined) return;
     setActiveTab(selected);
     props.onActiveTab(selected, text);
+    setText(props.jsonConfig); //dont why I need it. Don't work without it
   };
 
   return (
@@ -49,7 +50,7 @@ const TabConfig = props => {
             className={"is-small " + BUTTONS_UNIQUE_CLASS.GET}
             onClick={() => props.onGetPosition(activeTab)}
           >
-            {`Get ${activeTab} From Arduino`}
+            {`Read ${activeTab} From Servos`}
           </Button>
           <Button
             color={"info"}

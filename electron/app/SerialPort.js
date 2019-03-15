@@ -4,8 +4,8 @@ class SerialPort {
   constructor(mainWindow, portName, baudRate) {
     this.mainWindow = mainWindow;
 
-    const port = this.connectToPort(portName, baudRate);
-    this.listenToPort(port);
+    this.port = this.connectToPort(portName, baudRate);
+    this.listenToPort();
   }
 
   connectToPort(portName, baudRate) {
@@ -14,26 +14,57 @@ class SerialPort {
       {
         baudRate: baudRate
       },
-      errOpen => {
-        this.mainWindow.webContents.send("electron:connected", {
-          message: null,
-          error: errOpen.message
-        });
-        return console.log(errOpen.message);
+      error => {
+        if (!error) {
+          this.mainWindow.webContents.send("electron:connected", {
+            message: "Connected to " + portName,
+            error: null
+          });
+        } else {
+          this.mainWindow.webContents.send("electron:connected", {
+            message: null,
+            error: error.message
+          });
+        }
       }
     );
-
-    this.mainWindow.webContents.send("electron:connected", {
-      message: "Connected to " + portName,
-      error: null
+    //listen for any disconnect event once
+    port.once("close", err => {
+      this.mainWindow.webContents.send("electron:disconnected", {
+        message: "Disconnected",
+        error: null
+      });
     });
 
     return port;
   }
+  disconnectFromPort() {
+    this.port.close(error => {
+      if (error) {
+        this.mainWindow.webContents.send("electron:disconnected", {
+          message: null,
+          error: error.message
+        });
+      }
+    });
+  }
 
-  listenToPort(port) {
-    port.on("data", data => {
-      console.log("DATA:", data);
+  requestServosPosition(configId) {
+    this.port.write('{"getPosition":"' + configId + '"}');
+  }
+
+  listenToPort(callback) {
+    this.port.on("data", data => {
+      //REF: https://stackoverflow.com/questions/48981442/how-to-send-json-from-arduino-to-node-js-serialport
+      let str = data.toString(); //Convert to string
+      str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
+      str = JSON.stringify(data); // Convert to JSON
+      str = JSON.parse(data); //Then parse it
+
+      const configId = str["config_name"]; //ex: 1,2,3,4 or 5
+      if (!configId && (configId < 1 || configId > 5)) return; //wrong or no value
+
+      callback(str);
     });
   }
 
@@ -59,7 +90,7 @@ class SerialPort {
 
       console.log("ports", ports.map(port => port.comName));
       mainWindow.webContents.send("electron:port", {
-        ports: ports.map(port => port.comName),
+        ports: [...ports.map(port => port.comName), "COM1"],
         error: null
       });
     });

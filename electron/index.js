@@ -5,14 +5,41 @@ const SerialPort = require("./app/SerialPort");
 const { app, ipcMain } = electron;
 
 let mainWindow;
+let serialPort;
 
 app.on("ready", () => {
   mainWindow = new MainWindow(`http://localhost:3000`);
 
-  SerialPort.giveSerialPortList(mainWindow); //give to React the port list
+  //wait for react to ask for the port list
+  ipcMain.on("react:port", () => {
+    SerialPort.giveSerialPortList(mainWindow); //give to React the port list
+  });
 
   //wait for the client to choose the port he want to connect
-  ipcMain.on("react:port", (event, portName) => {
-    const serialPort = new SerialPort(mainWindow, portName, 9600);
+  ipcMain.on("react:connect", (event, portName) => {
+    serialPort = new SerialPort(mainWindow, portName, 9600);
+
+    //listen for incoming json data from the arduino
+    serialPort.listenToPort(jsonConfig => {
+      mainWindow.webContents.send("electron:data", {
+        data: jsonConfig
+      });
+    });
+  });
+
+  ipcMain.on("react:position", (event, configId) => {
+    serialPort.requestServosPosition(configId);
+  });
+
+  //wait for the client to disconnect from current port
+  ipcMain.on("react:disconnect", event => {
+    if (serialPort) {
+      serialPort.disconnectFromPort();
+    } else {
+      mainWindow.webContents.send("electron:disconnected", {
+        message: null,
+        error: "you are not connected to any serial port"
+      });
+    }
   });
 });
