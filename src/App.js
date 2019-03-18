@@ -4,24 +4,32 @@ import "./App.scss";
 import SerialConnect from "./components/SerialConnect/SerialConnect";
 import TabConfig from "./components/TabConfig/TabConfig";
 import { TABS, BUTTONS_UNIQUE_CLASS } from "./utils/constant";
-import { loadingButtonByClass } from "./utils/util";
+import { loadingButtonByClass, tabToID } from "./utils/util";
 import DebugConsole from "./components/DebugConsole/DebugConsole";
+import Terminal from "./components/Terminal/Terminal";
 const { ipcRenderer } = window.require("electron");
 
 class App extends Component {
   state = {
     portsList: [],
     activeTab: TABS.MIN,
-    [TABS.MIN]: "", //id=1 in ARDUINO
-    [TABS.MAX]: "", //id=2
-    [TABS.POS1]: "", //id=3
-    [TABS.POS2]: "", //id=4
-    [TABS.POS3]: "", //id=5
+    [TABS.MIN]: "{}", //id=1 in ARDUINO
+    [TABS.MAX]: "{}", //id=2
+    [TABS.POS1]: "{}", //id=3
+    [TABS.POS2]: "{}", //id=4
+    [TABS.POS3]: "{}", //id=5
     message: "",
+    console: "Console for arduino",
     isConnected: false
   };
 
   componentDidMount() {
+    // setInterval(() => {
+    //   this.setState({
+    //     console: Math.random().toString()
+    //   });
+    // }, 100);
+
     //listen for electron calls. Update the states in consequence
     ipcRenderer.send("react:port"); //hey electon, what is my available ports?
     ipcRenderer.once("electron:port", (event, { ports, error }) => {
@@ -44,12 +52,22 @@ class App extends Component {
         this.setState({ message: message, isConnected: false });
       }
       loadingButtonByClass(BUTTONS_UNIQUE_CLASS.CONNECT, false);
+      loadingButtonByClass(BUTTONS_UNIQUE_CLASS.GET, false);
     });
 
     ipcRenderer.on("electron:data", (event, data) => {
       console.log("RECEIVED DATA", data);
-      this.setState({ [this.state.activeTab]: data });
       loadingButtonByClass(BUTTONS_UNIQUE_CLASS.GET, false);
+
+      //output the data to the main console
+      this.setState({
+        console: data
+      });
+
+      //forward the correct data to the active tab text area
+      const configId = data["config_name"]; //ex: 1,2,3,4 or 5
+      if (!configId && (configId < 1 || configId > 5)) return; //wrong or no value
+      this.setState({ [this.state.activeTab]: data });
     });
   }
 
@@ -66,7 +84,8 @@ class App extends Component {
 
   onDisableServosHandler = () => {
     //send "disable_servos" cmd to electron
-    console.log("Disable");
+    ipcRenderer.send("react:disable"); //hey electon, I want to disable the servos
+    this.setState({ message: "Disable command sent to arduino" });
     //loadingButtonByClass(BUTTONS_UNIQUE_CLASS.DISABLE_SERVOS, true);
   };
   //------------------------------------------------------------
@@ -85,18 +104,31 @@ class App extends Component {
 
   onTestHandler = jsonText => {
     //tell the arduino to execute the json
-    console.log(jsonText);
+    try {
+      const json = JSON.parse(jsonText);
+      ipcRenderer.send("react:test", json); //hey electon, I want to test the actual servos position
+      this.setState({ message: "Test command sent to arduino" });
+    } catch (e) {
+      this.setState({ message: "Not a valid Json format" });
+    }
     //loadingButtonByClass(BUTTONS_UNIQUE_CLASS.TEST, true);
   };
 
   onGetPositionHandler = activeTab => {
-    ipcRenderer.send("react:position", activeTab + 1); //hey electon, I want to get the actual servos position
+    ipcRenderer.send("react:position", tabToID(activeTab)); //hey electon, I want to get the actual servos position
     loadingButtonByClass(BUTTONS_UNIQUE_CLASS.GET, true);
   };
 
   onSendConfigHandler = (activeTab, jsonText) => {
     //send "config_${activeTab}" to electron
-    console.log(activeTab, jsonText);
+    try {
+      let json = JSON.parse(jsonText);
+      json.id = tabToID(activeTab);
+      ipcRenderer.send("react:save", json); //hey electon, I want to test the actual servos position
+      this.setState({ message: activeTab + " Save command sent to arduino" });
+    } catch (e) {
+      this.setState({ message: "Not a valid Json format" });
+    }
     //loadingButtonByClass(BUTTONS_UNIQUE_CLASS.SAVE, true);
   };
 
@@ -119,6 +151,7 @@ class App extends Component {
           <div className="Configuration">
             <div className="Tab">
               <TabConfig
+                isConnected={this.state.isConnected}
                 defaultTab={this.state.activeTab}
                 jsonConfig={jsonConfig}
                 onActiveTab={(tab, jsonText) =>
@@ -140,6 +173,9 @@ class App extends Component {
           <div className="Pyramid" />
           <div className="Legend" />
           <div className="Send-Config" />
+          <div className="App-Terminal">
+            <Terminal data={this.state.console} />
+          </div>
         </div>
       </div>
     );

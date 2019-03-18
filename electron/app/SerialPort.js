@@ -49,8 +49,9 @@ class SerialPort {
     });
   }
 
-  requestServosPosition(configId) {
-    this.port.write('{"getPosition":"' + configId + '"}');
+  sendToArduino(json) {
+    console.log(json);
+    this.port.write(JSON.stringify(json));
   }
 
   listenToPort(callback) {
@@ -60,10 +61,6 @@ class SerialPort {
       str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
       str = JSON.stringify(data); // Convert to JSON
       str = JSON.parse(data); //Then parse it
-
-      const configId = str["config_name"]; //ex: 1,2,3,4 or 5
-      if (!configId && (configId < 1 || configId > 5)) return; //wrong or no value
-
       callback(str);
     });
   }

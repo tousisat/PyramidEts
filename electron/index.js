@@ -27,10 +27,6 @@ app.on("ready", () => {
     });
   });
 
-  ipcMain.on("react:position", (event, configId) => {
-    serialPort.requestServosPosition(configId);
-  });
-
   //wait for the client to disconnect from current port
   ipcMain.on("react:disconnect", event => {
     if (serialPort) {
@@ -42,4 +38,31 @@ app.on("ready", () => {
       });
     }
   });
+
+  //-------------------------------------ARDUINO COMMANDS START-----------------------------------
+
+  ipcMain.on("react:disable", event => {
+    let jsonText = {};
+    jsonText.request = "disable"; //detach servos
+    serialPort.sendToArduino(jsonText);
+  });
+
+  ipcMain.on("react:test", (event, jsonText) => {
+    jsonText.request = "test"; //test the servos with current config
+    serialPort.sendToArduino(jsonText);
+  });
+
+  ipcMain.on("react:position", (event, configId) => {
+    let jsonText = {};
+    jsonText.request = "read"; //get the servos value at current position
+    jsonText.id = configId;
+    serialPort.sendToArduino(jsonText);
+  });
+
+  ipcMain.on("react:save", (event, jsonText) => {
+    jsonText.request = "save";
+    serialPort.sendToArduino(jsonText);
+  });
+
+  //-------------------------------------ARDUINO COMMANDS END-----------------------------------
 });

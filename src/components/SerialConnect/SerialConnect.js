@@ -38,6 +38,7 @@ const SerialConnect = props => {
         {!props.isConnected ? "Connect" : "Disconnect"}
       </Button>
       <Button
+        disabled={!props.isConnected}
         onClick={props.onDisableServos}
         color={"warning"}
         className={

@@ -18,7 +18,7 @@ const TabConfig = props => {
     if (selected === undefined) return;
     setActiveTab(selected);
     props.onActiveTab(selected, text);
-    setText(props.jsonConfig); //dont why I need it. Don't work without it
+    setText(props.jsonConfig); //dont know why I need it. Don't work without it
   };
 
   return (
@@ -40,6 +40,7 @@ const TabConfig = props => {
 
         <div className="TabButtons">
           <Button
+            disabled={!props.isConnected}
             className={"is-small " + BUTTONS_UNIQUE_CLASS.TEST}
             onClick={() => props.onTest(text)}
             text
@@ -47,12 +48,14 @@ const TabConfig = props => {
             test
           </Button>
           <Button
+            disabled={!props.isConnected}
             className={"is-small " + BUTTONS_UNIQUE_CLASS.GET}
             onClick={() => props.onGetPosition(activeTab)}
           >
             {`Read ${activeTab} From Servos`}
           </Button>
           <Button
+            disabled={!props.isConnected}
             color={"info"}
             className={"is-small " + BUTTONS_UNIQUE_CLASS.SAVE}
             onClick={() => props.onSendConfig(activeTab, text)}
