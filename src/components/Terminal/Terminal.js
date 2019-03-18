@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
+import { Form, Button } from "react-bulma-components";
 import "./Terminal.scss";
 
 const Terminal = props => {
   const [data, setData] = useState([]);
+  const [input, setInput] = useState("");
 
   useEffect(() => {
     const objDiv = document.getElementById("console");
@@ -21,6 +23,21 @@ const Terminal = props => {
 
   return (
     <div className="Terminal">
+      <div className="toolbox">
+        <Form.Input
+          className={"is-small"}
+          value={input}
+          onChange={event => setInput(event.target.value)}
+          placeholder="Data to send..."
+        />
+        <Button
+          disabled={!props.isConnected}
+          className={"is-small"}
+          onClick={() => props.onDebugSend(input)}
+        >
+          Send
+        </Button>
+      </div>
       <div className="Console" id="console">
         {data}
       </div>

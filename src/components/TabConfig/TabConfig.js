@@ -10,7 +10,13 @@ const TabConfig = props => {
 
   //watch for props change
   useEffect(() => {
-    setText(props.jsonConfig);
+    let jsontext = props.jsonConfig;
+    //try to make the json pretty
+    try {
+      var obj = JSON.parse(props.jsonConfig);
+      jsontext = JSON.stringify(obj, undefined, 2);
+    } catch (err) {}
+    setText(jsontext);
   }, [props.jsonConfig]);
 
   const updateActiveTab = event => {
@@ -31,10 +37,11 @@ const TabConfig = props => {
         <Tabs.Tab active={activeTab === TABS.POS3}>{TABS.POS3}</Tabs.Tab>
       </Tabs>
       <div className="TabContainer">
-        <Form.Textarea
+        <textarea
+          id="myTextArea"
           onChange={event => setText(event.target.value)}
           value={text}
-          className="TabContainer-textarea"
+          className="textarea TabContainer-textarea"
           placeholder={activeTab + " configuration..."}
         />
 

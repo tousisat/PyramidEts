@@ -54,6 +54,11 @@ class SerialPort {
     this.port.write(JSON.stringify(json));
   }
 
+  sendRawToArduino(data) {
+    console.log(data);
+    this.port.write(data);
+  }
+
   listenToPort(callback) {
     this.port.on("data", data => {
       //REF: https://stackoverflow.com/questions/48981442/how-to-send-json-from-arduino-to-node-js-serialport

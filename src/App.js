@@ -132,6 +132,10 @@ class App extends Component {
     //loadingButtonByClass(BUTTONS_UNIQUE_CLASS.SAVE, true);
   };
 
+  onDebugSendHandler = data => {
+    ipcRenderer.send("react:debug", data); //hey electon, I want to test the actual servos position
+  };
+
   render() {
     const jsonConfig = this.state[this.state.activeTab];
     return (
@@ -174,7 +178,11 @@ class App extends Component {
           <div className="Legend" />
           <div className="Send-Config" />
           <div className="App-Terminal">
-            <Terminal data={this.state.console} />
+            <Terminal
+              isConnected={this.state.isConnected}
+              onDebugSend={data => this.onDebugSendHandler(data)}
+              data={this.state.console}
+            />
           </div>
         </div>
       </div>

@@ -2,7 +2,12 @@
   margin-top: 1rem;
   margin-right: 1rem;
 
+  .toolbox {
+    display: flex;
+  }
+
   .Console {
+    margin-top: 0.2rem;
     background: #000;
     border: 3px groove #ccc;
     color: #ccc;

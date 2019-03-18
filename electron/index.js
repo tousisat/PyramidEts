@@ -64,5 +64,9 @@ app.on("ready", () => {
     serialPort.sendToArduino(jsonText);
   });
 
+  ipcMain.on("react:debug", (event, rawData) => {
+    serialPort.sendRawToArduino(rawData);
+  });
+
   //-------------------------------------ARDUINO COMMANDS END-----------------------------------
 });
