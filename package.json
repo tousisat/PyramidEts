@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@serialport/parser-readline": "^2.0.2",
     "electron": "^4.0.8",
     "node-sass": "^4.11.0",
     "react": "^16.8.4",

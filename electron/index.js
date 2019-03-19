@@ -20,10 +20,8 @@ app.on("ready", () => {
     serialPort = new SerialPort(mainWindow, portName, 9600);
 
     //listen for incoming json data from the arduino
-    serialPort.listenToPort(jsonConfig => {
-      mainWindow.webContents.send("electron:data", {
-        data: jsonConfig
-      });
+    serialPort.listenToPort(function(jsonConfig) {
+      mainWindow.webContents.send("electron:data", jsonConfig);
     });
   });
 

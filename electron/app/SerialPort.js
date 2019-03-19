@@ -1,11 +1,11 @@
 const Serial = require("serialport");
+const Readline = require("@serialport/parser-readline");
 
 class SerialPort {
   constructor(mainWindow, portName, baudRate) {
     this.mainWindow = mainWindow;
 
     this.port = this.connectToPort(portName, baudRate);
-    this.listenToPort();
   }
 
   connectToPort(portName, baudRate) {
@@ -60,12 +60,17 @@ class SerialPort {
   }
 
   listenToPort(callback) {
-    this.port.on("data", data => {
+    const parser = this.port.pipe(new Readline());
+    parser.on("data", data => {
       //REF: https://stackoverflow.com/questions/48981442/how-to-send-json-from-arduino-to-node-js-serialport
       let str = data.toString(); //Convert to string
-      str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
-      str = JSON.stringify(data); // Convert to JSON
-      str = JSON.parse(data); //Then parse it
+      // try {
+      //   str = str.replace(/\r?\n|\r/g, ""); //remove '\r' from this String
+      //   str = JSON.stringify(data); // Convert to JSON
+      //   str = JSON.parse(data); //Then parse it
+      //   callback(str);
+      // } catch (err) {}
+      console.log(str);
       callback(str);
     });
   }
@@ -90,9 +95,8 @@ class SerialPort {
         return;
       }
 
-      console.log("ports", ports.map(port => port.comName));
       mainWindow.webContents.send("electron:port", {
-        ports: [...ports.map(port => port.comName), "COM1"],
+        ports: [...ports.map(port => port.comName)],
         error: null
       });
     });
