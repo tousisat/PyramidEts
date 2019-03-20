@@ -7,24 +7,40 @@ import { BUTTONS_UNIQUE_CLASS } from "../../utils/constant";
 const TabConfig = props => {
   const [activeTab, setActiveTab] = useState(props.defaultTab);
   const [text, setText] = useState(props.jsonConfig);
+  const [isFormat, setIsFormat] = useState(false);
 
   //watch for props change
   useEffect(() => {
     let jsontext = props.jsonConfig;
+    if (isFormat) {
+      const jsonPretty = JsonPretty(jsontext);
+      if (jsonPretty) {
+        setText(jsonPretty);
+      } else {
+        setText(jsontext);
+      }
+      setIsFormat(false);
+    } else {
+      setText(jsontext);
+    }
+  }, [props.jsonConfig]);
+
+  const JsonPretty = json => {
     //try to make the json pretty
     try {
-      var obj = JSON.parse(props.jsonConfig);
-      jsontext = JSON.stringify(obj, undefined, 2);
-    } catch (err) {}
-    setText(jsontext);
-  }, [props.jsonConfig]);
+      var obj = JSON.parse(json);
+      return JSON.stringify(obj, undefined, 2);
+    } catch (err) {
+      return null;
+    }
+  };
 
   const updateActiveTab = event => {
     const selected = event.target.text;
     if (selected === undefined) return;
+    setIsFormat(true);
     setActiveTab(selected);
-    props.onActiveTab(selected, text);
-    setText(props.jsonConfig); //dont know why I need it. Don't work without it
+    props.onActiveTab(selected, props.jsonConfig);
   };
 
   return (
@@ -39,7 +55,10 @@ const TabConfig = props => {
       <div className="TabContainer">
         <textarea
           id="myTextArea"
-          onChange={event => setText(event.target.value)}
+          onChange={event => {
+            props.onJsonConfigChange(activeTab, event.target.value);
+            setText(event.target.value);
+          }}
           value={text}
           className="textarea TabContainer-textarea"
           placeholder={activeTab + " configuration..."}
@@ -49,7 +68,7 @@ const TabConfig = props => {
           <Button
             disabled={!props.isConnected}
             className={"is-small " + BUTTONS_UNIQUE_CLASS.TEST}
-            onClick={() => props.onTest(text)}
+            onClick={() => props.onTest(props.jsonConfig)}
             text
           >
             test
@@ -57,7 +76,10 @@ const TabConfig = props => {
           <Button
             disabled={!props.isConnected}
             className={"is-small " + BUTTONS_UNIQUE_CLASS.GET}
-            onClick={() => props.onGetPosition(activeTab)}
+            onClick={() => {
+              props.onGetPosition(activeTab);
+              setIsFormat(true);
+            }}
           >
             {`Read ${activeTab} From Servos`}
           </Button>
@@ -65,7 +87,7 @@ const TabConfig = props => {
             disabled={!props.isConnected}
             color={"info"}
             className={"is-small " + BUTTONS_UNIQUE_CLASS.SAVE}
-            onClick={() => props.onSendConfig(activeTab, text)}
+            onClick={() => props.onSendConfig(activeTab, props.jsonConfig)}
           >
             Save {activeTab} To Arduino
           </Button>

@@ -41,24 +41,23 @@ app.on("ready", () => {
 
   ipcMain.on("react:disable", event => {
     let jsonText = {};
-    jsonText.request = "disable"; //detach servos
+    jsonText.request = 1; //detach servos
     serialPort.sendToArduino(jsonText);
   });
 
   ipcMain.on("react:test", (event, jsonText) => {
-    jsonText.request = "test"; //test the servos with current config
-    serialPort.sendToArduino(jsonText);
+    serialPort.sendToArduino({ request: 2, ...jsonText });
   });
 
   ipcMain.on("react:position", (event, configId) => {
     let jsonText = {};
-    jsonText.request = "read"; //get the servos value at current position
+    jsonText.request = 3; //get the servos value at current position
     jsonText.id = configId;
     serialPort.sendToArduino(jsonText);
   });
 
   ipcMain.on("react:save", (event, jsonText) => {
-    jsonText.request = "save";
+    jsonText.request = 4;
     serialPort.sendToArduino(jsonText);
   });
 

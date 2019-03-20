@@ -68,7 +68,7 @@ class App extends Component {
         let jsonData = JSON.stringify(data); // Convert to JSON
         jsonData = JSON.parse(data); //Then parse it
         //forward the correct data to the active tab text area
-        const configId = jsonData["config_name"]; //ex: 1,2,3,4 or 5
+        const configId = jsonData["id"]; //ex: 1,2,3,4 or 5
         if (!configId && (configId < 1 || configId > 5)) return; //wrong or no value
         this.setState({ [this.state.activeTab]: data });
       } catch (err) {}
@@ -104,6 +104,14 @@ class App extends Component {
       };
     });
   };
+  //------------------------------------------------------------
+
+  onJsonConfigChangeHandler = (currentTab, textToUpdate) => {
+    this.setState({
+      [currentTab]: textToUpdate
+    });
+  };
+
   //------------------------------------------------------------
 
   onTestHandler = jsonText => {
@@ -162,6 +170,9 @@ class App extends Component {
                 isConnected={this.state.isConnected}
                 defaultTab={this.state.activeTab}
                 jsonConfig={jsonConfig}
+                onJsonConfigChange={(activeTab, jsonText) =>
+                  this.onJsonConfigChangeHandler(activeTab, jsonText)
+                }
                 onActiveTab={(tab, jsonText) =>
                   this.onActiveTabHandler(tab, jsonText)
                 }
