@@ -4,7 +4,6 @@
   "private": true,
   "dependencies": {
     "@serialport/parser-readline": "^2.0.2",
-    "electron": "^4.0.8",
     "node-sass": "^4.11.0",
     "react": "^16.8.4",
     "react-bulma-components": "^2.3.0",
@@ -18,7 +17,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "electron": "electron ./electron",
-    "rebuild": "electron-rebuild"
+    "rebuild": "electron-rebuild",
+    "electron-pack": "electron-builder ./electron"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -30,6 +30,19 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "electron": "^4.0.8",
+    "electron-builder": "^20.39.0",
     "electron-rebuild": "^1.8.4"
-  }
+  },
+  "build": {
+    "appId": "com.pfe.2019",
+    "files": [
+      "build/**/*",
+      "node_modules/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    }
+  },
+  "homepage": "./"
 }

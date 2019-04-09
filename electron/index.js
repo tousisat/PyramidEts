@@ -1,6 +1,7 @@
 const electron = require("electron");
 const MainWindow = require("./app/MainWindow");
 const SerialPort = require("./app/SerialPort");
+const path = require('path')
 
 const { app, ipcMain } = electron;
 
@@ -8,7 +9,7 @@ let mainWindow;
 let serialPort;
 
 app.on("ready", () => {
-  mainWindow = new MainWindow(`http://localhost:3000`);
+  mainWindow = new MainWindow(`file://${path.join(__dirname, '..','build','index.html')}`);
 
   //wait for react to ask for the port list
   ipcMain.on("react:port", () => {

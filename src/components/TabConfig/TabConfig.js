@@ -7,11 +7,13 @@ import { BUTTONS_UNIQUE_CLASS } from "../../utils/constant";
 const TabConfig = props => {
   const [activeTab, setActiveTab] = useState(props.defaultTab);
   const [text, setText] = useState(props.jsonConfig);
+  const [enableTextUpdate, setEnableTextUpdate] = useState(false);
   const [isFormat, setIsFormat] = useState(false);
 
   //watch for props change
   useEffect(() => {
     let jsontext = props.jsonConfig;
+    if (!enableTextUpdate) return;
     if (isFormat) {
       const jsonPretty = JsonPretty(jsontext);
       if (jsonPretty) {
@@ -79,6 +81,8 @@ const TabConfig = props => {
             onClick={() => {
               props.onGetPosition(activeTab);
               setIsFormat(true);
+              setEnableTextUpdate(true); //enable editing
+              setTimeout(() => setEnableTextUpdate(false), 2000); //disable editing
             }}
           >
             {`Read ${activeTab} From Servos`}
